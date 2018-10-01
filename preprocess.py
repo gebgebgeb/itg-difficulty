@@ -23,5 +23,7 @@ for root, dirs, files in tqdm(list(os.walk(SONGS_DIR))):
             all_songs.append(song_data)
 
 
+if not os.path.isdir('./res'):
+    os.mkdir('res')
 with open('res/all_songs.json','w') as f:
     json.dump(all_songs, f)
