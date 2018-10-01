@@ -24,7 +24,10 @@ def read_metadata(lines):
             bpms = {}
             for raw_bpm in raw_bpms:
                 beat, bpm = raw_bpm.split('=')
-                bpms[float(beat)] = float(bpm)
+                try:
+                    bpms[float(beat)] = float(bpm)
+                except:
+                    continue
     return {'title': title
             , 'artist': artist
             , 'credit': credit
