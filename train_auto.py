@@ -8,6 +8,8 @@ import sklearn.metrics
 
 import autosklearn.regression
 
+from features import vecify
+
 def valid(song, difficulty):
     if not len(song['bpms']) == 1:
         return False
@@ -19,19 +21,6 @@ def valid(song, difficulty):
         return False
     return True
 
-def vecify(song, difficulty):
-    chart_data = song['charts'][difficulty]
-
-    bpm = list(song['bpms'].values())[0]
-    out = [bpm
-            , float(chart_data['num_notes']) / chart_data['num_measures']
-            , chart_data['num_notes']
-            , chart_data['num_measures']
-            , chart_data['num_measures_stream']
-            , chart_data['num_measures_rest']
-            , chart_data['longest_stream']
-            ]
-    return out
 
 def all_charts():
     with open('res/all_songs.json', 'r') as f:
@@ -55,7 +44,6 @@ y = np.array(y)
 
 X_train, X_test, y_train, y_test = \
         sklearn.model_selection.train_test_split(X, y, random_state=1)
-
 
 automl = autosklearn.regression.AutoSklearnRegressor(
     #time_left_for_this_task=60
