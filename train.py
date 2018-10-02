@@ -4,6 +4,8 @@ from pprint import pprint
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures, RobustScaler
 
+from features import vecify
+
 def valid(song, difficulty):
     if not len(song['bpms']) == 1:
         return False
@@ -14,23 +16,6 @@ def valid(song, difficulty):
     if song['charts'][difficulty]['rating'] == 1:
         return False
     return True
-
-def vecify(song, difficulty):
-    chart_data = song['charts'][difficulty]
-
-    bpm = list(song['bpms'].values())[0]
-    out = [bpm
-            , bpm**2
-            , bpm**.5
-            , float(chart_data['num_notes']) / chart_data['num_measures']
-            , chart_data['num_notes']
-            , chart_data['num_measures_stream']
-            , chart_data['num_measures_stream']**.5
-            , chart_data['num_measures_rest']
-            , chart_data['longest_stream']
-            , chart_data['longest_stream']**.5
-            ]
-    return out
 
 def all_charts():
     with open('res/all_songs.json', 'r') as f:
