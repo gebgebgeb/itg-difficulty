@@ -3,12 +3,13 @@ import json
 from tqdm import tqdm
 
 from model import process
-
-SONGS_DIR = 'res/Songs'
+import cfg
 
 all_songs = []
 
-for root, dirs, files in tqdm(list(os.walk(SONGS_DIR))):
+for root, dirs, files in tqdm(list(os.walk(cfg.SONGS_DIR))):
+    if not('ITG' in root or 'YARK' in root):
+        continue
     for name in files:
         if name.lower().endswith('.sm') or name.lower().endswith('.ssc'):
             with open(os.path.join(root, name), 'r') as f:
