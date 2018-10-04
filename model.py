@@ -39,7 +39,7 @@ def read_metadata(lines):
 def read_chart(lines, target_difficulty):
     reading = False
     found = False
-    notes_data = [] # list of lists, each sublist is a measure
+    measures = [] # list of lists, each sublist is a measure
     for line_idx, line in enumerate(lines):
         if line.startswith('#NOTES:'):
             difficulty = lines[line_idx + 3].strip().strip(':')
@@ -50,17 +50,17 @@ def read_chart(lines, target_difficulty):
                 rating = int(float(lines[line_idx + 4].strip().strip(':')))
                 cur_measure = []
         if reading:
-            if line == ';':
+            if line.strip() == ';':
                 reading = False
             if len(line.strip()) == 4:
                 cur_measure.append(line.strip())
-            if line.strip() == ',':
-                notes_data.append(cur_measure)
+            if line.startswith(','):
+                measures.append(cur_measure)
                 cur_measure = []
     if found:
         num_measures = 0
         num_notes = 0
-        for measure in notes_data:
+        for measure in measures:
             for line in measure:
                 num_notes += sum([x in ['1', '2', '4'] for x in line])
             num_measures += 1
@@ -69,7 +69,7 @@ def read_chart(lines, target_difficulty):
         num_measures_rest = 0
         longest_stream = 0
         cur_stream = 0
-        for measure in notes_data:
+        for measure in measures:
             if len(measure) >= 16 and all(['1' in line for line in measure]):
                 num_measures_stream += 1
                 cur_stream += 1
@@ -88,6 +88,7 @@ def read_chart(lines, target_difficulty):
                 , 'num_measures_stream': num_measures_stream
                 , 'num_measures_rest': num_measures_rest
                 , 'longest_stream': longest_stream
+                , 'measures': measures
                 }
     else:
         return None

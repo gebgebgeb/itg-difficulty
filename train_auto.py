@@ -46,8 +46,8 @@ X_train, X_test, y_train, y_test = \
         sklearn.model_selection.train_test_split(X, y, random_state=1)
 
 automl = autosklearn.regression.AutoSklearnRegressor(
-    #time_left_for_this_task=60
-    #, per_run_time_limit=20
+    #time_left_for_this_task=6*60
+    #, per_run_time_limit=30
     time_left_for_this_task=6*60*60
     , per_run_time_limit=360
     , tmp_folder='/tmp/autosklearn_regression_example_tmp'
