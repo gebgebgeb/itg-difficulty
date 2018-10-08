@@ -39,5 +39,6 @@ for root, dirs, files in sorted(os.walk(PACK_DIR)):
                 , automl.predict(X) # Predicted rating
                 , [song['charts'][d]['rating'] for d in difficulties] # Old rating
                 , [song['charts'][d]['longest_stream'] for d in difficulties]
+                , [song['charts'][d]['most_common_strm_res'] for d in difficulties]
                 )))
             print('*'*80)

@@ -3,8 +3,18 @@ from pprint import pprint
 
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures, RobustScaler
+import sklearn.model_selection
+import sklearn.metrics
+from tqdm import tqdm
+import json
 
 from features import vecify
+import itertools
+
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1))
 
 def valid(song, difficulty):
     if not len(song['bpms']) == 1:
@@ -13,7 +23,8 @@ def valid(song, difficulty):
         return False
     if song['charts'][difficulty]['num_notes'] == 0:
         return False
-    if song['charts'][difficulty]['rating'] == 1:
+    difficulty = song['charts'][difficulty]['rating']
+    if difficulty == 1 or difficulty > 20:
         return False
     return True
 
@@ -37,35 +48,24 @@ for song, difficulty in all_charts:
     y.append(song['charts'][difficulty]['rating'] + 0.5)
 
 scaler = RobustScaler()
-'''
-poly = PolynomialFeatures(2, interaction_only=True, include_bias=False)
-#poly = PolynomialFeatures(2, include_bias=False)
-X = poly.fit_transform(
-        scaler.fit_transform(
-            raw_X
-            )
-        )
-'''
 X = scaler.fit_transform(raw_X)
 
-reg = LinearRegression().fit(X, y)
-print(reg.score(X, y))
-#print(reg.coef_)
-#print(reg.intercept_)
-input()
+X_train, X_test, y_train, y_test = \
+        sklearn.model_selection.train_test_split(X, y, random_state=1)
 
-for i, pred in enumerate(reg.predict(X)):
-    true = y[i]
-    if abs(pred - true) > 0.5:
-    #if True:
-        song, difficulty = all_charts[i]
-        #if not 'YARKSFA - Qual' in song['dirpath']:
-            #continue
-        print(song['title'])
-        print(difficulty)
-        print(song['charts'][difficulty]['rating'])
-        print(pred)
-        print(song['dirpath'])
-        print(raw_X[i])
-        print('*'*80)
+results = []
+for feature_indices in tqdm(list(powerset(range(X.shape[1])))):
+    if not feature_indices:
+        continue
+    reg = LinearRegression().fit(X_train[:, feature_indices], y_train)
+    predictions = reg.predict(X_test[:, feature_indices])
+    r2_score =  sklearn.metrics.r2_score(y_test, predictions)
+    results.append((feature_indices, r2_score))
 
+results.sort(key=lambda x:x[1])
+best_indices, best_r2 = results[-1]
+print('Best feature indices')
+print(best_indices)
+print(best_r2)
+with open('res/feature_selection.json', 'w') as f:
+    json.dump(results, f)

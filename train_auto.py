@@ -17,7 +17,8 @@ def valid(song, difficulty):
         return False
     if song['charts'][difficulty]['num_notes'] == 0:
         return False
-    if song['charts'][difficulty]['rating'] == 1:
+    difficulty = song['charts'][difficulty]['rating']
+    if difficulty == 1 or difficulty > 20:
         return False
     return True
 
@@ -50,8 +51,8 @@ automl = autosklearn.regression.AutoSklearnRegressor(
     #, per_run_time_limit=30
     time_left_for_this_task=6*60*60
     , per_run_time_limit=360
-    , tmp_folder='/tmp/autosklearn_regression_example_tmp'
-    , output_folder='/tmp/autosklearn_regression_example_out'
+    , tmp_folder='autosktmp'
+    , output_folder='autoskout'
 )
 automl.fit(X_train, y_train, dataset_name='sm',
            feat_type=['numerical']*len(X_train[0]))
@@ -63,6 +64,7 @@ with open('res/automl.pickle','rb') as f:
     automl = pickle.load(f)
 '''
 
+print('*'*80)
 print(automl.show_models())
 predictions = automl.predict(X_test)
 print("R2 score:", sklearn.metrics.r2_score(y_test, predictions))
