@@ -1,1 +1,10 @@
 SONGS_DIR = '/home/george/.stepmania-5.1/Songs'
+
+# train parameters
+# short ver
+time_left_for_this_task=6*60
+per_run_time_limit=30
+
+# long ver
+time_left_for_this_task=6*60*60
+per_run_time_limit=360
