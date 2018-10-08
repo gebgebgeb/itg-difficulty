@@ -15,6 +15,9 @@ PACK_DIR = os.path.join(cfg.SONGS_DIR
 with open('res/automl.pickle','rb') as f:
     automl = pickle.load(f)
 
+with open('res/best_indices.json', 'r') as f:
+    best_indices = json.load(f)
+
 for root, dirs, files in sorted(os.walk(PACK_DIR)):
     for fn in files:
         if fn.endswith('.sm'):
@@ -29,7 +32,7 @@ for root, dirs, files in sorted(os.walk(PACK_DIR)):
             song = process(fdata)
             difficulties = sorted(song['charts'])
             for difficulty in difficulties:
-                X.append(vecify(song, difficulty))
+                X.append(vecify(song, difficulty, feature_indices=best_indices))
             if not X:
                 continue
 
