@@ -80,12 +80,12 @@ if __name__=='__main__':
         if abs(pred - true) > 0.5:
         #if True:
             song, difficulty = all_charts[i]
-            #if not 'YARKSFA - Qual' in song['dirpath']:
+            #if not 'YARKSFA - Qual' in song['filepath']:
                 #continue
             print(song['title'])
             print(difficulty)
             print(song['charts'][difficulty]['rating'])
             print(pred)
-            print(song['dirpath'])
+            print(song['filepath'])
             print('*'*80)
 
