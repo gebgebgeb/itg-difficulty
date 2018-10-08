@@ -7,42 +7,22 @@ import sklearn.model_selection
 import sklearn.metrics
 from tqdm import tqdm
 import json
+import itertools
 
 from features import vecify
-import itertools
+import train
+
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
     return itertools.chain.from_iterable(itertools.combinations(s, r) for r in range(len(s)+1))
 
-def valid(song, difficulty):
-    if not len(song['bpms']) == 1:
-        return False
-    if song['charts'][difficulty]['num_measures'] == 0:
-        return False
-    if song['charts'][difficulty]['num_notes'] == 0:
-        return False
-    difficulty = song['charts'][difficulty]['rating']
-    if difficulty == 1 or difficulty > 20:
-        return False
-    return True
-
-def all_charts():
-    with open('res/all_songs.json', 'r') as f:
-        all_songs = json.load(f)
-    for song in all_songs:
-        for difficulty in song['charts']:
-            if not valid(song, difficulty):
-                continue
-            yield song, difficulty
-
-
 raw_X = []
 y = []
 lost = 0
 total = 0
-all_charts = list(all_charts())
+all_charts = list(train.all_charts())
 for song, difficulty in all_charts:
     raw_X.append(vecify(song, difficulty))
     y.append(song['charts'][difficulty]['rating'] + 0.5)

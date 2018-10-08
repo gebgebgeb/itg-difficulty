@@ -34,54 +34,55 @@ def all_charts():
             yield song, difficulty
 
 
-X = []
-y = []
-all_charts = list(all_charts())
-for song, difficulty in all_charts:
-    X.append(vecify(song, difficulty))
-    y.append(song['charts'][difficulty]['rating'] + 0.5)
+if __name__=='__main__':
+    X = []
+    y = []
+    all_charts = list(all_charts())
+    for song, difficulty in all_charts:
+        X.append(vecify(song, difficulty))
+        y.append(song['charts'][difficulty]['rating'] + 0.5)
 
-X = np.array(X)
-y = np.array(y)
+    X = np.array(X)
+    y = np.array(y)
 
-X_train, X_test, y_train, y_test = \
-        sklearn.model_selection.train_test_split(X, y, random_state=1)
+    X_train, X_test, y_train, y_test = \
+            sklearn.model_selection.train_test_split(X, y, random_state=1)
 
-automl = autosklearn.regression.AutoSklearnRegressor(
-    time_left_for_this_task=cfg.time_left_for_this_task
-    , per_run_time_limit=cfg.per_run_time_limit
-    , tmp_folder='autosktmp'
-    , output_folder='autoskout'
-)
-automl.fit(X_train, y_train, dataset_name='sm',
-           feat_type=['numerical']*len(X_train[0]))
+    automl = autosklearn.regression.AutoSklearnRegressor(
+        time_left_for_this_task=cfg.time_left_for_this_task
+        , per_run_time_limit=cfg.per_run_time_limit
+        , tmp_folder='autosktmp'
+        , output_folder='autoskout'
+    )
+    automl.fit(X_train, y_train, dataset_name='sm',
+               feat_type=['numerical']*len(X_train[0]))
 
-with open('res/automl.pickle','wb') as f:
-    pickle.dump(automl, f)
-'''
-with open('res/automl.pickle','rb') as f:
-    automl = pickle.load(f)
-'''
+    with open('res/automl.pickle','wb') as f:
+        pickle.dump(automl, f)
+    '''
+    with open('res/automl.pickle','rb') as f:
+        automl = pickle.load(f)
+    '''
 
-print('*'*80)
-print(automl.show_models())
-predictions = automl.predict(X_test)
-print("R2 score:", sklearn.metrics.r2_score(y_test, predictions))
-print("Mean Absolute Error:", sklearn.metrics.mean_absolute_error(y_test, predictions))
-print("Median Absolute Error:", sklearn.metrics.median_absolute_error(y_test, predictions))
-input()
+    print('*'*80)
+    print(automl.show_models())
+    predictions = automl.predict(X_test)
+    print("R2 score:", sklearn.metrics.r2_score(y_test, predictions))
+    print("Mean Absolute Error:", sklearn.metrics.mean_absolute_error(y_test, predictions))
+    print("Median Absolute Error:", sklearn.metrics.median_absolute_error(y_test, predictions))
+    input()
 
-for i, pred in enumerate(automl.predict(X)):
-    true = y[i]
-    if abs(pred - true) > 0.5:
-    #if True:
-        song, difficulty = all_charts[i]
-        #if not 'YARKSFA - Qual' in song['dirpath']:
-            #continue
-        print(song['title'])
-        print(difficulty)
-        print(song['charts'][difficulty]['rating'])
-        print(pred)
-        print(song['dirpath'])
-        print('*'*80)
+    for i, pred in enumerate(automl.predict(X)):
+        true = y[i]
+        if abs(pred - true) > 0.5:
+        #if True:
+            song, difficulty = all_charts[i]
+            #if not 'YARKSFA - Qual' in song['dirpath']:
+                #continue
+            print(song['title'])
+            print(difficulty)
+            print(song['charts'][difficulty]['rating'])
+            print(pred)
+            print(song['dirpath'])
+            print('*'*80)
 
