@@ -25,8 +25,12 @@ for root, dirs, files in tqdm(list(os.walk(cfg.SONGS_DIR))):
         continue
     try:
         song_data = process(full_fname)
-    except (UnicodeDecodeError, ValueError):
+    except UnicodeDecodeError:
         print('invalid file: %s' % full_fname)
+        print('could not open for reading')
+    except ValueError as e:
+        print('invalid file: %s' % full_fname)
+        print(e)
     all_songs.append(song_data)
 
 
