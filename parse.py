@@ -22,7 +22,7 @@ def parse_measures(lines):
 
 def parse_chart_sm(notesdata):
     out = {}
-    lines = [remove_comment(x).strip().strip(':') for x in notesdata.split('\n')]
+    lines = [remove_comment(x).strip() for x in notesdata.split(':')]
     if not lines[0]:
         lines = lines[1:]
     out['dance_type'] = lines[0]
@@ -31,10 +31,10 @@ def parse_chart_sm(notesdata):
     out['rating'] = float(lines[3])
     out['meter'] = out['rating']
     out['groove_radar'] = [float(x) for x in lines[4].split(',')]
-    out['notes'] = parse_measures(lines[5:])
+    out['notes'] = parse_measures(lines[-1].split('\n'))
     return out
 
-def numify_if_possible(s):
+def numify(s):
     try:
         return int(s)
     except:
@@ -43,16 +43,25 @@ def numify_if_possible(s):
         return float(s)
     except:
         pass
-    return s
+    raise ValueError("'%s' doesn't look like a number" % s)
+
+def numify_if_possible(s):
+    try:
+        numify(s)
+    except ValueError:
+        return s
 
 
-def multival_parse(data):
+def multival_parse(data, split=',', force_numify=True):
     out = []
-    changes = data.split(',')
+    changes = data.split(split)
     changes = [x.strip().split('=') for x in changes]
     changes = [x for x in changes if not all([not subx for subx in x])]
     changes = [x for x in changes if len(x) > 0]
-    changes = [tuple(map(numify_if_possible, x)) for x in changes]
+    if force_numify:
+        changes = [tuple(map(numify, x)) for x in changes]
+    else:
+        changes = [tuple(map(numify_if_possible, x)) for x in changes]
     return changes
 
 
@@ -70,7 +79,7 @@ def parse(filename):
             elif key in ['offset', 'samplelength', 'samplestart']:
                 song_data[key] = float(value)
             elif key in ['bpms', 'stops']:
-                song_data[key] = multival_parse(value)
+                song_data[key] = multival_parse(value, force_numify=True)
             else:
                 song_data[key] = value
         charts = [x[1] for x in sections if x[0] in ['NOTES', 'NOTES2']]
@@ -88,8 +97,12 @@ def parse(filename):
             key = key.lower()
             if key in ['offset', 'samplelength', 'samplestart']:
                 song_data[key] = float(value)
-            elif key in ['bpms', 'stops', 'delays', 'warps', 'combos', 'speeds', 'fakes', 'labels', 'bgchanges', 'attacks', 'scrolls', 'tickcounts', 'timesignatures', 'fgchanges']:
-                song_data[key] = multival_parse(value)
+            elif key in ['bpms', 'stops', 'delays', 'warps', 'combos', 'speeds', 'fakes', 'scrolls', 'tickcounts', 'timesignatures']:
+                song_data[key] = multival_parse(value, split=',', force_numify=True)
+            elif key in ['labels', 'bgchanges', 'fgchanges']:
+                song_data[key] = multival_parse(value, split=',', force_numify=False)
+            elif key == 'attacks':
+                song_data[key] = multival_parse(value, split='  ', force_numify=False)
             else:
                 song_data[key] = value
         song_data['charts'] = {}

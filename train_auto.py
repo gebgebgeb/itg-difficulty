@@ -35,11 +35,14 @@ def all_charts():
 
 
 if __name__=='__main__':
+
+    with open('res/best_indices.json', 'r') as f:
+        best_indices = json.load(f)
     X = []
     y = []
     all_charts = list(all_charts())
     for song, difficulty in all_charts:
-        X.append(vecify(song, difficulty))
+        X.append(vecify(song, difficulty, feature_indices=best_indices))
         y.append(song['charts'][difficulty]['rating'] + 0.5)
 
     X = np.array(X)

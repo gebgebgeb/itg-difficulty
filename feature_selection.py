@@ -10,8 +10,7 @@ import json
 import itertools
 
 from features import vecify
-import train
-
+import train_auto
 
 def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
@@ -22,7 +21,7 @@ raw_X = []
 y = []
 lost = 0
 total = 0
-all_charts = list(train.all_charts())
+all_charts = list(train_auto.all_charts())
 for song, difficulty in all_charts:
     raw_X.append(vecify(song, difficulty))
     y.append(song['charts'][difficulty]['rating'] + 0.5)
@@ -49,3 +48,5 @@ print(best_indices)
 print(best_r2)
 with open('res/feature_selection.json', 'w') as f:
     json.dump(results, f)
+with open('res/best_indices.json', 'w') as f:
+    json.dump(best_indices, f)
