@@ -1,5 +1,5 @@
 def vecify(song, difficulty):
-    chart_data = song['charts'][difficulty]
+    chart_data = song['charts'][difficulty]['features']
 
     bpm = list(song['bpms'].values())[0]
     effective_bpm = bpm*chart_data['most_common_strm_res']
