@@ -26,10 +26,7 @@ for root, dirs, files in sorted(os.walk(PACK_DIR)):
 
             X = []
 
-            with open(song_fn, 'r') as f:
-                fdata = f.read()
-
-            song = process(fdata)
+            song = process(song_fn)
             difficulties = sorted(song['charts'])
             for difficulty in difficulties:
                 X.append(vecify(song, difficulty, feature_indices=best_indices))
