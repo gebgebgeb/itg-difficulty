@@ -22,7 +22,7 @@ def parse_measures(lines):
 
 def parse_chart_sm(notesdata):
     out = {}
-    lines = [remove_comment(x).strip() for x in notesdata.split(':')]
+    lines = [x.strip() for x in notesdata.split(':')]
     if not lines[0]:
         lines = lines[1:]
     out['dance_type'] = lines[0]
