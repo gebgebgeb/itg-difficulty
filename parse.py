@@ -22,16 +22,16 @@ def parse_measures(lines):
 
 def parse_chart_sm(notesdata):
     out = {}
-    lines = [remove_comment(x).strip() for x in notesdata.split(':')]
-    if not lines[0]:
-        lines = lines[1:]
-    out['dance_type'] = lines[0]
-    out['description'] = lines[1]
-    out['difficulty'] = lines[2]
-    out['rating'] = float(lines[3])
+    segments = [x.strip() for x in notesdata.split(':')]
+    if not segments[0]:
+        segments = segments[1:]
+    out['dance_type'] = segments[0]
+    out['description'] = segments[1]
+    out['difficulty'] = segments[2]
+    out['rating'] = float(segments[3])
     out['meter'] = out['rating']
-    out['groove_radar'] = [float(x) for x in lines[4].split(',')]
-    out['notes'] = parse_measures(lines[-1].split('\n'))
+    out['groove_radar'] = [float(x) for x in segments[4].split(',')]
+    out['notes'] = parse_measures(segments[-1].split('\n'))
     return out
 
 def numify(s):
@@ -64,12 +64,15 @@ def multival_parse(data, split=',', force_numify=True):
         changes = [tuple(map(numify_if_possible, x)) for x in changes]
     return changes
 
-
-def parse(filename):
+def parse_file(filename):
     mode = filename.split('.')[-1].lower()
-    song_data = {'filepath': filename}
     with open(filename, 'r') as f:
         filedata = f.read()
+    song_data = parse(filedata, mode=mode)
+    song_data = {'filepath': filename}
+    return song_data
+
+def parse(filedata, mode):
     if mode == 'sm':
         sections = config_pattern.findall(filedata)
         for key, value in sections:
@@ -126,8 +129,9 @@ def parse(filename):
     return song_data
 
 if __name__=='__main__':
-    test_fn = 'res/Songs/ITG Helblinde 2016/Legacy of Kings - [Zaia]/Legacy of Kings.sm'
+    #test_fn = 'res/Songs/ITG Helblinde 2016/Legacy of Kings - [Zaia]/Legacy of Kings.sm'
     #test_fn = 'res/Songs/ITG U.P.S/wndrwll/wndrwll.ssc'
+    test_fn = 'res/Songs/A NCPR\'s ITG Katsudou!/Barefoot Renaissance/Barefoot Renaissance.sm'
 
     pprint(parse(test_fn))
     

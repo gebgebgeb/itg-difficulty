@@ -1,5 +1,5 @@
 from pprint import pprint
-from parse import parse
+from parse import parse_file
 
 def has_step(line):
     return any([x in line for x in ['1','2','4']])
@@ -67,7 +67,7 @@ def precompute_features(measures):
     return output
 
 def process(fname):
-    song_data = parse(fname)
+    song_data = parse_file(fname)
     for difficulty in song_data['charts']:
         chart_data = song_data['charts'][difficulty]
         chart_data['features'] = precompute_features(chart_data['notes'])
