@@ -62,8 +62,7 @@ if __name__=='__main__':
     )
     automl.fit(X_train.copy(), y_train.copy(), dataset_name='sm',
                feat_type=['numerical']*len(X_train[0]))
-    automl.refit(X_train.copy(), y_train.copy(),
-               feat_type=['numerical']*len(X_train[0]))
+    automl.refit(X_train.copy(), y_train.copy())
 
     with open('res/automl.pickle','wb') as f:
         pickle.dump(automl, f)
