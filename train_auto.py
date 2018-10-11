@@ -11,6 +11,7 @@ import autosklearn.regression
 from features import vecify
 import cfg
 
+
 def valid(song, difficulty):
     if not len(song['bpms']) == 1:
         return False
@@ -56,8 +57,12 @@ if __name__=='__main__':
         , per_run_time_limit=cfg.per_run_time_limit
         , tmp_folder='autosktmp'
         , output_folder='autoskout'
+        , resampling_strategy='cv'
+        , resampling_strategy_arguments={'folds': 5},
     )
-    automl.fit(X_train, y_train, dataset_name='sm',
+    automl.fit(X_train.copy(), y_train.copy(), dataset_name='sm',
+               feat_type=['numerical']*len(X_train[0]))
+    automl.refit(X_train.copy(), y_train.copy(),
                feat_type=['numerical']*len(X_train[0]))
 
     with open('res/automl.pickle','wb') as f:
