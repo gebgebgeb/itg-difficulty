@@ -48,13 +48,13 @@ for i, result in enumerate(results_generator):
     results.add(result)
     if i % 10000 == 5000:
         results = SortedList(results[:5000], key=lambda x:abs(1-x[1]))
+        best_indices, best_r2 = results[-1]
         print(results[0])
+        with open('res/feature_selection.json', 'w') as f:
+            json.dump(list(results), f)
+        with open('res/best_indices.json', 'w') as f:
+            json.dump(best_indices, f)
 
-best_indices, best_r2 = results[-1]
 print('Best feature indices')
 print(best_indices)
 print(best_r2)
-with open('res/feature_selection.json', 'w') as f:
-    json.dump(results, f)
-with open('res/best_indices.json', 'w') as f:
-    json.dump(best_indices, f)
