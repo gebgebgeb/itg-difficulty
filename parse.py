@@ -69,10 +69,11 @@ def parse_file(filename):
     with open(filename, 'r') as f:
         filedata = f.read()
     song_data = parse(filedata, mode=mode)
-    song_data = {'filepath': filename}
+    song_data['filepath'] = filename
     return song_data
 
 def parse(filedata, mode):
+    song_data = {}
     if mode == 'sm':
         sections = config_pattern.findall(filedata)
         for key, value in sections:

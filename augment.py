@@ -68,6 +68,8 @@ def precompute_features(measures):
 
 def process(fname):
     song_data = parse_file(fname)
+    if not 'charts' in song_data:
+        return None
     for difficulty in song_data['charts']:
         chart_data = song_data['charts'][difficulty]
         chart_data['features'] = precompute_features(chart_data['notes'])

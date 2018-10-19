@@ -22,11 +22,12 @@ for root, dirs, files in sorted(os.walk(PACK_DIR)):
     for fn in files:
         if fn.endswith('.sm'):
             song_fn = os.path.join(root, fn)
-            print(song_fn)
 
             X = []
 
             song = process(song_fn)
+            if song is None:
+                continue
             difficulties = sorted(song['charts'])
             for difficulty in difficulties:
                 X.append(vecify(song, difficulty, feature_indices=best_indices))
